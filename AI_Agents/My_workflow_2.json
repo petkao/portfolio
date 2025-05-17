@@ -1,0 +1,223 @@
+{
+  "name": "My workflow 2",
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "jsonExample"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -980,
+        -80
+      ],
+      "id": "8662296b-18de-4906-bcd8-64e0bb1fb85c",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1RL7VFY7cIIKOVoTSySi2Tftvz-PrdFG59su6Crck7m0",
+          "mode": "list",
+          "cachedResultName": "n8n Leads V2 ",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1RL7VFY7cIIKOVoTSySi2Tftvz-PrdFG59su6Crck7m0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1RL7VFY7cIIKOVoTSySi2Tftvz-PrdFG59su6Crck7m0/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Date",
+              "lookupValue": "={{ $today }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -800,
+        -80
+      ],
+      "id": "b6a1a109-af2c-4b92-915b-30ddd6b030cd",
+      "name": "Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "dRfD5aO1XcKYmqRY",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "9155fadd-1e80-4ce1-9ba7-683adbf43884",
+              "leftValue": "={{ $json.Called }}",
+              "rightValue": "True",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "c737f167-022c-4239-a2bf-44b99dd6c68d",
+              "leftValue": "={{ $json.Rejected }}",
+              "rightValue": "True",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        -620,
+        -80
+      ],
+      "id": "929c7c29-d113-4141-864d-c7ad59abcf2c",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        -440,
+        -80
+      ],
+      "id": "91a17079-34a7-4ebb-8f2e-31a0e80a02ec",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Static array — replace this with incoming data if using from another node\nconst data = [\n  {\n    \"row_number\": 3,\n    \"First Name\": \"Peter\",\n    \"Last Name\": \"Kao\",\n    \"EMail\": \"petkao@yahoo.com\",\n    \"Budget\": \"0-1,000\",\n    \"Message\": \"Third Try\",\n    \"Date\": \"2025-04-18T00:00:00.000-07:00\",\n    \"Rejected\": true,\n    \"Called\": true\n  },\n  {\n    \"row_number\": 4,\n    \"First Name\": \"Peter\",\n    \"Last Name\": \"Kao\",\n    \"EMail\": \"petkao@hotmail.com\",\n    \"Budget\": \"1,000+\",\n    \"Message\": \"Fourth Test\",\n    \"Date\": \"2025-04-18T00:00:00.000-07:00\",\n    \"Rejected\": true,\n    \"Called\": true\n  }\n];\n\n// Initialize output string\nlet combinedText = \"\";\n\n// Format each person's info into the desired format\nfor (const person of data) {\n  combinedText += `Name: ${person[\"First Name\"]} ${person[\"Last Name\"]}\\n`;\n  combinedText += `EMail: ${person[\"EMail\"]}\\n`;\n  combinedText += `Budget: ${person[\"Budget\"]}\\n`;\n  combinedText += `Message: ${person[\"Message\"]}\\n\\n`;\n}\n\n// Output the result as one text field\nreturn [\n  {\n    json: {\n      combinedText: combinedText.trim()\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -280,
+        -80
+      ],
+      "id": "1fdaaa08-e8ea-4567-9371-1d0fa7af006e",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "sendTo": "petkao@gmail.com",
+        "subject": "List of new leads",
+        "emailType": "text",
+        "message": " [ { \"combinedText\":  \"Name: undefined undefined\\nEMail: undefined\\nBudget: undefined\\nMessage: undefined\" } ]",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -100,
+        -80
+      ],
+      "id": "601fa134-a63f-4542-9f51-f5cfdf158a89",
+      "name": "Gmail",
+      "webhookId": "9faacbb1-d794-4792-a066-6105ec9e4d17",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "OIR1eINhaWhVUfek",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "6262c00b-31b7-44bf-acba-43a91e35e468",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "972ff2c6bbe466e66af2ce4f16fa6ac3e63a5f3f0bc2be9cc60943d1642b9396"
+  },
+  "id": "LqfpeYDIpb7OMI9q",
+  "tags": []
+}
